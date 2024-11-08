@@ -1,0 +1,58 @@
+<div class="container mt-4">
+    <h2>Reservas</h2>
+    
+    <!-- Filtros -->
+    <form  class="row g-3 mb-4">
+      
+      <div class="col-md-6">
+        <label class="form-label">Buscar</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="Buscar por empresa o código" 
+          formControlName="searchTerm">
+      </div>
+    </form>
+
+
+    <!-- Tabla de Reservas -->
+    <div class="table-responsive" >
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Empresa</th>
+            <th>Lugar</th>
+            <th>Fecha</th>
+            <th>Personas</th>
+            <th>Total</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr >
+            <td>
+              <span class="badge bg-secondary">123456789</span>
+            </td>
+            <td>Empresa de prueba</td>
+            <td>Lugar de prueba</td>
+            <td>
+              18/09/2024
+              <small class="d-block text-muted">
+                18:00 - 20:00
+              </small>
+            </td>
+            <td>100</td>
+            <td>{{1850 | currency}}</td>
+            <td>
+              <span [class]="getStatusBadgeClass('confirmed')">
+              confirmed
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+   
+    </div>
+  </div>

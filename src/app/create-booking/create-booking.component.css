@@ -1,0 +1,8 @@
+.required:after {
+    content: " *";
+    color: red;
+  }
+
+  .form-label {
+    font-weight: 500;
+  }
