@@ -26,7 +26,7 @@
         "Aire acondicionado"
       ],
       "address": "Calle Comercial 456, Distrito Financiero"
-     },
+    },
     {
       "id": "v3",
       "name": "Hotel Executive Gardens",
@@ -273,6 +273,65 @@
       "totalAmount": 19125,
       "status": "pending",
       "createdAt": "2024-10-28T18:33:39.735Z"
+    },
+    {
+      "id": "c663",
+      "bookingCode": "793157",
+      "companyName": "Jose SA",
+      "companyEmail": "jose@correo.com",
+      "contactPhone": "123465798",
+      "venueId": "v1",
+      "eventDate": "2024-10-30",
+      "startTime": "20:57",
+      "endTime": "22:57",
+      "totalPeople": 300,
+      "services": [
+        {
+          "serviceId": "s1",
+          "quantity": 150,
+          "startTime": "20:57",
+          "endTime": "21:57"
+        }
+      ],
+      "totalAmount": 5737.5,
+      "status": "confirmed"
+    },
+    {
+      "id": "5afb",
+      "bookingCode": "659567",
+      "companyName": "123213",
+      "companyEmail": "aspodmpa@correo.com",
+      "contactPhone": "213321123321",
+      "venueId": "v1",
+      "eventDate": "2024-10-28",
+      "startTime": "21:04",
+      "endTime": "22:04",
+      "totalPeople": 150,
+      "services": [],
+      "totalAmount": 0,
+      "status": "confirmed"
+    },
+    {
+      "id": "c02f",
+      "bookingCode": "316812",
+      "companyName": "JoseSASA",
+      "companyEmail": "jose@correo.com",
+      "contactPhone": "123456789",
+      "venueId": "v1",
+      "eventDate": "2024-10-30",
+      "startTime": "21:28",
+      "endTime": "22:28",
+      "totalPeople": 30,
+      "services": [
+        {
+          "serviceId": "s2",
+          "quantity": 150,
+          "startTime": "21:29",
+          "endTime": "22:29"
+        }
+      ],
+      "totalAmount": 12750,
+      "status": "confirmed"
     }
   ],
   "availability": [

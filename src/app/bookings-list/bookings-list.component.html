@@ -2,7 +2,7 @@
     <h2>Reservas</h2>
     
     <!-- Filtros -->
-    <form  class="row g-3 mb-4">
+    <form  class="row g-3 mb-4" >
       
       <div class="col-md-6">
         <label class="form-label">Buscar</label>
@@ -10,7 +10,8 @@
           type="text" 
           class="form-control" 
           placeholder="Buscar por empresa o código" 
-          formControlName="searchTerm">
+          [formControl]="searchValue"
+        >
       </div>
     </form>
 
@@ -30,26 +31,30 @@
           </tr>
         </thead>
         <tbody>
-          <tr >
-            <td>
-              <span class="badge bg-secondary">123456789</span>
-            </td>
-            <td>Empresa de prueba</td>
-            <td>Lugar de prueba</td>
-            <td>
-              18/09/2024
-              <small class="d-block text-muted">
-                18:00 - 20:00
-              </small>
-            </td>
-            <td>100</td>
-            <td>{{1850 | currency}}</td>
-            <td>
-              <span [class]="getStatusBadgeClass('confirmed')">
-              confirmed
-              </span>
-            </td>
-          </tr>
+          @for(booking of bookings; track booking) {
+            <tr >
+              <td>
+                <span class="badge bg-secondary">{{booking.bookingCode}}</span>
+              </td>
+              <td>{{booking.companyName}}</td>
+
+              <td>{{ getVenueName(booking.venueId) }}</td>
+
+              <td>
+                {{booking.eventDate}}
+                <small class="d-block text-muted">
+                  {{booking.startTime}} - {{booking.endTime}}
+                </small>
+              </td>
+              <td>{{booking.totalPeople}}</td>
+              <td>{{booking.totalAmount | currency}}</td>
+              <td>
+                <span [class]="getStatusBadgeClass('confirmed')">
+                confirmed
+                </span>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
 

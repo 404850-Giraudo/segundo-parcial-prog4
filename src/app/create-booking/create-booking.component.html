@@ -5,7 +5,7 @@
     </div>
   </div>
 
-  <form class="mt-4">
+  <form class="mt-4" [formGroup]="bookingForm" (ngSubmit)="sendForm()">
     <!-- Datos de la Empresa -->
     <div class="card mb-4">
       <div class="card-header bg-primary text-white">
@@ -14,17 +14,39 @@
       <div class="card-body">
         <div class="mb-3">
           <label class="form-label required">Nombre de la Empresa</label>
-          <input type="text" class="form-control" placeholder="Ingrese el nombre de la empresa">
+          <input type="text" class="form-control" placeholder="Ingrese el nombre de la empresa" formControlName="companyName">
+        
+          @if (bookingForm.get('companyName')?.invalid && bookingForm.get('companyName')?.touched) {
+            @if (bookingForm.get('companyName')?.errors?.['required']) {
+              <small class="text-danger ms-2">requerido</small>
+            }
+            @if (bookingForm.get('companyName')?.errors?.['minlength']) {
+              <small class="text-danger ms-2">al menos 5 caracteres</small>
+            }
+          }
         </div>
 
         <div class="mb-3">
           <label class="form-label required">Email Corporativo</label>
-          <input type="email" class="form-control" placeholder="ejemplo@empresa.com">
+          <input type="email" class="form-control" placeholder="ejemplo@empresa.com" formControlName="companyEmail">
+          @if (bookingForm.get('companyEmail')?.invalid && bookingForm.get('companyEmail')?.touched) {
+            @if (bookingForm.get('companyEmail')?.errors?.['required']) {
+              <small class="text-danger ms-2">requerido</small>
+            }
+            @if (bookingForm.get('companyEmail')?.errors?.['email']) {
+              <small class="text-danger ms-2">email no válido</small>
+            }
+          }
         </div>
 
         <div class="mb-3">
           <label class="form-label required">Teléfono de Contacto</label>
-          <input type="tel" class="form-control" placeholder="+54 11 1234-5678">
+          <input type="tel" class="form-control" placeholder="+54 11 1234-5678" formControlName="contactPhone">
+          @if (bookingForm.get('contactPhone')?.invalid && bookingForm.get('contactPhone')?.touched) {
+            @if (bookingForm.get('contactPhone')?.errors?.['required']) {
+              <small class="text-danger ms-2">requerido</small>
+            }
+          }
         </div>
       </div>
     </div>
@@ -37,8 +59,10 @@
       <div class="card-body">
         <div class="mb-3">
           <label class="form-label required">Lugar del Evento</label>
-          <select class="form-select">
-            <option value="">Seleccione un lugar</option>
+          <select class="form-select" formControlName="venueId" (change)="selectVenue($event)">
+            @for(venue of venueOptions; track venue) {
+              <option [value]="venue.id">{{venue.name}}</option>
+            }
           </select>
         </div>
 
@@ -46,80 +70,97 @@
           <div class="col-md-4">
             <div class="mb-3">
               <label class="form-label required">Fecha</label>
-              <input type="date" class="form-control">
+              <input type="date" class="form-control" formControlName="eventDate">
             </div>
           </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label class="form-label required">Hora de Inicio</label>
-              <input type="time" class="form-control">
+              <input type="time" class="form-control" formControlName="startTime">
             </div>
           </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label class="form-label required">Hora de Finalización</label>
-              <input type="time" class="form-control">
+              <input type="time" class="form-control" formControlName="endTime">
             </div>
           </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label required">Cantidad Total de Personas</label>
-          <input type="number" class="form-control">
+          <input type="number" class="form-control" formControlName="totalPeople" (change)="calculateVenueTotal()">
+          @if (bookingForm.get('totalPeople')?.invalid && bookingForm.get('totalPeople')?.touched) {
+            @if (bookingForm.get('totalPeople')?.errors?.['max']) {
+              <small class="text-danger ms-2">Capacidad excedida</small>
+            }
+          }
         </div>
       </div>
+
+      <!-- validador asincrono -->
+
+      @if(bookingForm.getError('notAvailable')) {
+        <small class="text-danger ms-2">El lugar no se encuentra disponible para esa fecha</small>
+      }
     </div>
 
     <!-- Servicios Adicionales -->
     <div class="card mb-4">
       <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
         <h3 class="h5 mb-0">Servicios Adicionales</h3>
-        <button type="button" class="btn btn-light btn-sm">
+        <button type="button" class="btn btn-light btn-sm" (click)="add()">
           + Agregar Servicio
         </button>
       </div>
-      <div class="card-body">
-        <div class="border rounded p-3 mb-3 position-relative">
-          <button type="button" class="btn-close position-absolute top-0 end-0 m-2"></button>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label required">Tipo de Servicio</label>
-                <select class="form-select">
-                  <option value="">Seleccione un servicio</option>
-                </select>
+      <div class="card-body" formArrayName="services">
+        
+        <!-- recorro el array -->
+        @for(service of services.controls; track $index) {
+          <div class="border rounded p-3 mb-3 position-relative" [formGroupName]="$index">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" (click)="remove($index)"></button>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label required">Tipo de Servicio</label>
+                  <select class="form-select" formControlName="serviceId" (change)="calculateSubTotal($index)" >
+                    @for(serv of serviceOptions; track serv) {
+                      <option [value]="serv.id">{{serv.name}}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+  
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label required">Cantidad de Personas</label>
+                  <input type="number" class="form-control" formControlName="quantity" (change)="calculateSubTotal($index)">
+                </div>
               </div>
             </div>
-
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label required">Cantidad de Personas</label>
-                <input type="number" class="form-control">
+  
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label required">Hora de Inicio</label>
+                  <input type="time" class="form-control" formControlName="startTime">
+                </div>
               </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label required">Hora de Finalización</label>
+                  <input type="time" class="form-control" formControlName="endTime">
+                </div>
+              </div>
+            </div>
+  
+            <div class="text-end">
+              <small class="text-muted">
+                Subtotal del servicio: ${{subtotals[$index]}}
+              </small>
             </div>
           </div>
-
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label required">Hora de Inicio</label>
-                <input type="time" class="form-control">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label required">Hora de Finalización</label>
-                <input type="time" class="form-control">
-              </div>
-            </div>
-          </div>
-
-          <div class="text-end">
-            <small class="text-muted">
-              Subtotal del servicio: $0.00
-            </small>
-          </div>
-        </div>
+        }
       </div>
     </div>
 
@@ -134,7 +175,7 @@
             <h6>Subtotal:</h6>
           </div>
           <div class="col-auto">
-            <h6>$0.0</h6>
+            <h6>$ {{ total + discount }}</h6>
           </div>
         </div>
 
@@ -144,7 +185,7 @@
             <small>¡Descuento aplicado por grupo mayor a 100 personas!</small>
           </div>
           <div class="col-auto">
-            <h6>-$0.0</h6>
+            <h6>-$ {{discount}}</h6>
           </div>
         </div>
 
@@ -155,7 +196,7 @@
             <h5 class="mb-0">Total Final:</h5>
           </div>
           <div class="col-auto">
-            <h5 class="mb-0">$0.0</h5>
+            <h5 class="mb-0">$ {{total}}</h5>
           </div>
         </div>
       </div>
