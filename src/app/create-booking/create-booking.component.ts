@@ -22,11 +22,15 @@ export class CreateBookingComponent {
   venueTotal = 0;
   selectedVenue: any;
 
+  // array para los subtotales de los servicios
   subtotals: any[] = [];
 
+  // enteros para obtener el $ total y el descuento
   total: number = 0;
   discount: number = 0;
 
+
+  // formGroup con todos los inputs
   bookingForm: FormGroup = new FormGroup({
 
     // Datos de la empresa
@@ -46,9 +50,12 @@ export class CreateBookingComponent {
 
   }, [], [ isAvailable(this.parcialService) ]) 
 
-  // ver que el validador asincrono se llama una vez que los validadores sincronos son correctos
+  // el validador asincrono se llama una vez que los validadores sincronos son correctos
+  // y lo llamo para todo el formulario, no para un campo en específico
   // -----------------------------------------------------------------------------------------
 
+
+  // metodos para el form array
   get services() {
     return this.bookingForm.controls['services'] as FormArray;
   }
@@ -100,7 +107,7 @@ export class CreateBookingComponent {
 
     if(this.bookingForm.valid) {
       console.log("form valido");
-      console.log(this.createBooking());
+      // console.log(this.createBooking());
 
       const booking = this.createBooking();
 
@@ -136,8 +143,8 @@ export class CreateBookingComponent {
 
     let subTotal = 0;
 
+    // cargo la lista de servicios que objtengo recorriendo el fromArray
     for(const serv of this.services.controls) {
-
       bookingServices.push({
 
           serviceId: serv.get('serviceId')?.value,
@@ -152,14 +159,17 @@ export class CreateBookingComponent {
       
     }
 
+    // calculo cual es el $ total del booking
     this.calculateTotal();
 
+    // codigo con 6 numeros random
     let code = "";
     for(let i = 0; i < 6; i++) {
       code += (Math.floor(1 + Math.random() * 9)).toString();
     }
     console.log("CODIGO", code)
     
+    // creo el objeto booking que mando con el form
     const booking : Booking = {
       bookingCode: code,
       companyName: this.bookingForm.controls['companyName'].value,
@@ -183,18 +193,21 @@ export class CreateBookingComponent {
 
 
 
-  // metodo para tomar el servicio selecciondo
+  // metodo para tomar el servicio selecciondo a traves del id que selecciono en el select
   selectVenue(event: any) {
     console.log(event.target.value);
     const venueId = event.target.value;
     console.log(venueId);
 
+    // obtengo a que venue hace referencia con ese id
     const venue = this.venueOptions.find(venue => venue.id === venueId);
     console.log(venue);
     this.selectedVenue = venue;
 
+    // agrego el validador con la cantidad de personas que permite el venue
     this.bookingForm.controls['totalPeople'].addValidators(Validators.max(venue.capacity))
     
+    // aca calculo el $ total del venue, que no es el total del booking porque faltan los servicios
     this.venueTotal = venue.pricePerHour * this.bookingForm.controls['totalPeople'].value;
 
   }
